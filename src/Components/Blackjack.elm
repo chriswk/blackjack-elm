@@ -274,11 +274,11 @@ gameStatus model =
         "No games played yet"
   in
     div
-      [ class "gameStatus" ]
-      [ div [ class "player" ] [ text playerWins ]
-      , div [ class "dealer" ] [ text dealerWins ]
-      , text gamesPlayed
-      , text winPercentage
+      [ class "line gameStatus" ]
+      [ div [ class "line player" ] [ div [ class "unit" ] [ text playerWins ] ]
+      , div [ class "line dealer" ] [ div [ class "unit" ] [ text dealerWins ] ]
+      , div [ class "line played" ] [ div [ class "unit" ] [ text gamesPlayed ] ]
+      , div [ class "line winPercentage" ] [ div [ class "unit" ] [ text winPercentage ] ]
       ]
 
 
@@ -289,7 +289,7 @@ dealerHtml model =
       List.map cardToHtml model.dealer.hand
   in
     div
-      [ class "dealer" ]
+      [ class "line dealer" ]
       cards
 
 
@@ -300,14 +300,14 @@ playerHtml model =
       List.map cardToHtml model.player.hand
   in
     div
-      [ class "player" ]
+      [ class "line player" ]
       cards
 
 
 gameTableHtml : Address Action -> Model -> Html
 gameTableHtml address model =
   div
-    [ id "game", class "col-md8" ]
+    [ id "game", class "unit r-size2of3" ]
     [ dealerHtml model
     , playerHtml model
     ]
@@ -316,7 +316,7 @@ gameTableHtml address model =
 sidebarHtml : Address Action -> Model -> Html
 sidebarHtml address model =
   div
-    [ id "sidebar", class "col-md4" ]
+    [ id "sidebar", class "unit r-size1of3" ]
     [ button
         [ onClick address NewGame ]
         [ text "New Game" ]
@@ -337,7 +337,7 @@ buttonHtml address =
 view : Address Action -> Model -> Html
 view address model =
   div
-    [ class "container-fluid" ]
+    [ class "line" ]
     [ gameTableHtml address model
     , sidebarHtml address model
     , text (toString model)

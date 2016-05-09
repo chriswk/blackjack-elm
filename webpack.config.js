@@ -70,7 +70,7 @@ if ( TARGET_ENV === 'development' ) {
             'postcss-loader',
             'sass-loader'
           ]
-        }
+        },
       ]
     }
 
@@ -101,7 +101,7 @@ if ( TARGET_ENV === 'production' ) {
           ])
         },
         { test: /\.png$/, loader: "url-loader?limit=100000" },
-        { test: /\.jpg$/, loader: "file-loader" }
+        { test: /\.jpg$/, loader: "file-loader" },
       ]
     },
 
