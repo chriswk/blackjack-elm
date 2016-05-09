@@ -1,62 +1,300 @@
-.card {
-  .H2 {
-    background: #b5afa7 url(/img/cards-png-240px/H2.png) no-repeat 23px 30px;
-    background-size: 240px;
-  },
-  H3 {
-    background: #b5afa7 url(/img/cards-png-240px/H2.png) no-repeat 23px 30px;
-    background-size: 240px;
-  },
-  H4 {
-    background: #b5afa7 url(/img/cards-png-240px/H2.png) no-repeat 23px 30px;
-    background-size: 240px;
+.hearts {
 
-  },
-  H5 {
-    background: #b5afa7 url(/img/cards-png-240px/H2.png) no-repeat 23px 30px;
-    background-size: 240px;
-  },
-  H6 {
-    background: #b5afa7 url(/img/cards-png-240px/H2.png) no-repeat 23px 30px;
-    background-size: 240px;
+  .two {
+    background: url(/img/2H.png) no-repeat;
+    height: 360px;
+    width: 240px;
   }
-  H7 {
-    background: #b5afa7 url(/img/cards-png-240px/H2.png) no-repeat 23px 30px;
-    background-size: 240px;
+  .three {
+      background: url(/img/3H.png) no-repeat;
+      height: 360px;
+      width: 240px;
+  }
+  .four {
+      background: url(/img/4H.png) no-repeat;
+      height: 360px;
+      width: 240px;
 
   }
-  H8 {
-    background: #b5afa7 url(/img/cards-png-240px/H2.png) no-repeat 23px 30px;
-    background-size: 240px;
+  .five {
+    background: url(/img/5H.png) no-repeat;
+      height: 360px;
+      width: 240px;
 
   }
-  H9 {
-    background: #b5afa7 url(/img/cards-png-240px/H2.png) no-repeat 23px 30px;
-    background-size: 240px;
+  .six {
+    background: url(/img/6H.png) no-repeat;
+          height: 360px;
+      width: 240px;
 
   }
-  H10 {
-    background: #b5afa7 url(/img/cards-png-240px/H2.png) no-repeat 23px 30px;
-    background-size: 240px;
+  .seven {
+    background: url(/img/7H.png) no-repeat;
+          height: 360px;
+      width: 240px;
 
   }
-  HJ {
-    background: #b5afa7 url(/img/cards-png-240px/H2.png) no-repeat 23px 30px;
-    background-size: 240px;
+  .eight {
+    background: url(/img/8H.png) no-repeat;
+          height: 360px;
+      width: 240px;
 
   }
-  HQ {
-    background: #b5afa7 url(/img/cards-png-240px/H2.png) no-repeat 23px 30px;
-    background-size: 240px;
+  .nine {
+    background: url(/img/9H.png) no-repeat;
+          height: 360px;
+      width: 240px;
 
   }
-  HK {
-    background: #b5afa7 url(/img/cards-png-240px/H2.png) no-repeat 23px 30px;
-    background-size: 240px;
+  .ten {
+    background: url(/img/10H.png) no-repeat;
+          height: 360px;
+      width: 240px;
 
   }
-  HA {
-    background: #b5afa7 url(/img/cards-png-240px/H2.png) no-repeat 23px 30px;
-    background-size: 240px;
+  .jack {
+    background: url(/img/JH.png) no-repeat;
+          height: 360px;
+      width: 240px;
+
+  }
+  .queen {
+    background: url(/img/QH.png) no-repeat;
+          height: 360px;
+      width: 240px;
+
+  }
+  .king {
+    background: url(/img/KH.png) no-repeat;
+          height: 360px;
+      width: 240px;
+
+  }
+  .ace {
+    background: url(/img/AH.png) no-repeat;
+          height: 360px;
+      width: 240px;
+
+  }
+}
+
+.diamonds {
+  .two {
+    background: url(/img/2D.png) no-repeat;
+          height: 360px;
+      width: 240px;
+
+  }
+  .three {
+      background: url(/img/3D.png) no-repeat;
+          height: 360px;
+      width: 240px;
+
+  }
+  .four {
+      background: url(/img/4D.png) no-repeat;
+          height: 360px;
+      width: 240px;
+
+  }
+  .five {
+    background: url(/img/5D.png) no-repeat;
+          height: 360px;
+      width: 240px;
+
+
+  }
+  .six {
+    background: url(/img/6D.png) no-repeat;
+          height: 360px;
+      width: 240px;
+
+  }
+  .seven {
+    background: url(/img/7D.png) no-repeat;
+          height: 360px;
+      width: 240px;
+
+  }
+  .eight {
+    background: url(/img/8D.png) no-repeat;
+          height: 360px;
+      width: 240px;
+
+  }
+  .nine {
+    background: url(/img/9D.png) no-repeat;
+          height: 360px;
+      width: 240px;
+
+  }
+  .ten {
+    background: url(/img/10D.png) no-repeat;
+          height: 360px;
+      width: 240px;
+
+  }
+  .jack {
+    background: url(/img/JD.png) no-repeat;
+          height: 360px;
+      width: 240px;
+
+  }
+  .queen {
+    background: url(/img/QD.png) no-repeat;
+          height: 360px;
+      width: 240px;
+
+  }
+  .king {
+    background: url(/img/KD.png) no-repeat;
+          height: 360px;
+      width: 240px;
+
+  }
+  .ace {
+    background: url(/img/AD.png) no-repeat;
+          height: 360px;
+      width: 240px;
+
+  }
+}
+
+.clubs {
+  .two {
+    background: url(/img/2C.png) no-repeat;
+      height: 360px;
+      width: 240px;
+
+  }
+  .three {
+      background: url(/img/3C.png) no-repeat;
+      height: 360px;
+      width: 240px;
+
+  }
+  .four {
+      background: url(/img/4C.png) no-repeat;
+      height: 360px;
+      width: 240px;
+  }
+  .five {
+    background: url(/img/5C.png) no-repeat;
+      height: 360px;
+      width: 240px;
+
+  }
+  .six {
+    background: url(/img/6C.png) no-repeat;
+      height: 360px;
+      width: 240px;
+  }
+  .seven {
+    background: url(/img/7C.png) no-repeat;
+      height: 360px;
+      width: 240px;
+  }
+  .eight {
+    background: url(/img/8C.png) no-repeat;
+      height: 360px;
+      width: 240px;
+  }
+  .nine {
+    background: url(/img/9C.png) no-repeat;
+      height: 360px;
+      width: 240px;
+  }
+  .ten {
+    background: url(/img/10C.png) no-repeat;
+      height: 360px;
+      width: 240px;
+  }
+  .jack {
+    background: url(/img/JC.png) no-repeat;
+      height: 360px;
+      width: 240px;
+  }
+  .queen {
+    background: url(/img/QC.png) no-repeat;
+      height: 360px;
+      width: 240px;
+  }
+  .king {
+    background: url(/img/KC.png) no-repeat;
+      height: 360px;
+      width: 240px;
+  }
+  .ace {
+    background: url(/img/AC.png) no-repeat;
+      height: 360px;
+      width: 240px;
+  }
+}
+
+.spades {
+  .two {
+    background: url(/img/2S.png) no-repeat;
+    height: 360px;
+    width: 240px;
+  }
+  .three {
+    background: url(/img/3S.png) no-repeat;
+    height: 360px;
+    width: 240px;
+  }
+  .four {
+    background: url(/img/4S.png) no-repeat;
+    height: 360px;
+    width: 240px;
+  }
+  .five {
+    background: url(/img/5S.png) no-repeat;
+    height: 360px;
+    width: 240px;
+  }
+  .six {
+    background: url(/img/6S.png) no-repeat;
+    height: 360px;
+    width: 240px;
+  }
+  .seven {
+    background: url(/img/7S.png) no-repeat;
+    height: 360px;
+    width: 240px;
+  }
+  .eight {
+    background: url(/img/8S.png) no-repeat;
+    height: 360px;
+    width: 240px;
+  }
+  .nine {
+    background: url(/img/9S.png) no-repeat;
+    height: 360px;
+    width: 240px;
+  }
+  .ten {
+    background: url(/img/10S.png) no-repeat;
+    height: 360px;
+    width: 240px;
+  }
+  .jack {
+    background: url(/img/JS.png) no-repeat;
+    height: 360px;
+    width: 240px;
+  }
+  .queen {
+    background: url(/img/QS.png) no-repeat;
+    height: 360px;
+    width: 240px;
+  }
+  .king {
+    background: url(/img/KS.png) no-repeat;
+    height: 360px;
+    width: 240px;
+  }
+  .ace {
+    background: url(/img/AS.png) no-repeat;
+    height: 360px;
+    width: 240px;
   }
 }

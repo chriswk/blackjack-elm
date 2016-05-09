@@ -1,7 +1,6 @@
 module Main (..) where
 
 import Components.Blackjack exposing (..)
-import Signal exposing (Signal, map)
 import Random exposing (Seed)
 import Html exposing (..)
 import Effects exposing (Effects, Never)
@@ -13,8 +12,13 @@ import Random exposing (initialSeed)
 initialModel : Model
 initialModel =
   { deck = []
-  , seed = initialSeed 5152
+  , seed = startTimeSeed
   }
+
+
+startTimeSeed : Seed
+startTimeSeed =
+  initialSeed <| round startTime
 
 
 init : ( Model, Effects Action )
@@ -49,6 +53,9 @@ main =
 port runner : Signal (Task.Task Never ())
 port runner =
   app.tasks
+
+
+port startTime : Float
 
 
 

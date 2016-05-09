@@ -1,11 +1,13 @@
 module Components.Blackjack (..) where
 
 import Html exposing (..)
+import Html.Attributes exposing (..)
 import Random exposing (Seed, generate)
 import Signal exposing (Signal, Address)
 import Effects exposing (Effects)
 import Array exposing (toList, fromList)
 import Random.Array exposing (shuffle)
+import String exposing (toLower)
 
 
 type Action
@@ -209,9 +211,24 @@ shuffleCards model =
     { model | deck = shuffledCards, seed = newSeed }
 
 
+cardToHtml : Card -> Html
+cardToHtml { suit, rank } =
+  let
+    suitClass =
+      toLower (toString suit)
+
+    rankClass =
+      toLower (toString rank)
+  in
+    div
+      [ class suitClass ]
+      [ div [ class rankClass ] []
+      ]
+
+
 view : Address Action -> Model -> Html
 view address model =
-  div [] []
+  div [ class "game" ] (List.map cardToHtml (List.take 2 model.deck))
 
 
 update : Action -> Model -> ( Model, Effects Action )
