@@ -244,7 +244,7 @@ cardToHtml : Card -> Html
 cardToHtml { suit, rank } =
   let
     suitClass =
-      toLower (toString suit)
+      toLower (toString suit) ++ " unit"
 
     rankClass =
       toLower (toString rank)
@@ -340,17 +340,24 @@ view address model =
     [ class "line" ]
     [ gameTableHtml address model
     , sidebarHtml address model
-    , text (toString model)
+    , text (toString model.player)
+    , text (toString model.dealer)
     ]
 
 
 newGame : Model -> Model
 newGame model =
   let
+    newGameModel =
+      { model | deck = newDeck }
+
     reshuffled =
-      shuffleCards model
+      shuffleCards newGameModel
+
+    newGameMod =
+      initialDeal reshuffled
   in
-    { reshuffled | gamesPlayed = model.gamesPlayed + 1 }
+    { newGameMod | gamesPlayed = model.gamesPlayed + 1 }
 
 
 cardScorer : Card -> Int -> Int
@@ -367,6 +374,17 @@ cardScorer card soFar =
 scoreHand : List Card -> Int
 scoreHand hand =
   List.foldl cardScorer 0 hand
+
+
+isBlackjack : List Card -> PlayerStatus
+isBlackjack hand =
+  if List.length hand == 2 then
+    if scoreHand hand == 21 then
+      Blackjack
+    else
+      Playing
+  else
+    Playing
 
 
 initialDeal : Model -> Model
@@ -388,10 +406,10 @@ initialDeal model =
       model.dealer
 
     upPlayer =
-      { player | hand = playerCards, score = scoreHand playerCards }
+      { player | hand = playerCards, score = scoreHand playerCards, status = isBlackjack playerCards }
 
     upDealer =
-      { dealer | hand = dealerCards, score = scoreHand dealerCards }
+      { dealer | hand = dealerCards, score = scoreHand dealerCards, status = isBlackjack dealerCards }
   in
     { model | deck = playedDeck, player = upPlayer, dealer = upDealer }
 
