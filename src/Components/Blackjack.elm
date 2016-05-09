@@ -269,7 +269,7 @@ gameStatus model =
 
     winPercentage =
       if model.gamesPlayed > 0 then
-        "Win percentage: " ++ (toString (model.playerWins / model.gamesPlayed))
+        "Win percentage: " ++ (toString (model.playerWins / model.gamesPlayed)) ++ "%"
       else
         "No games played yet"
   in
