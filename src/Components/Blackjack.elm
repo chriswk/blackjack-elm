@@ -307,7 +307,7 @@ playerHtml model =
 gameTableHtml : Address Action -> Model -> Html
 gameTableHtml address model =
   div
-    [ class "game col-md8" ]
+    [ id "game", class "col-md8" ]
     [ dealerHtml model
     , playerHtml model
     ]
@@ -316,7 +316,7 @@ gameTableHtml address model =
 sidebarHtml : Address Action -> Model -> Html
 sidebarHtml address model =
   div
-    [ class "col" ]
+    [ id "sidebar", class "col-md4" ]
     [ button
         [ onClick address NewGame ]
         [ text "New Game" ]
@@ -338,11 +338,9 @@ view : Address Action -> Model -> Html
 view address model =
   div
     [ class "container-fluid" ]
-    [ div
-        [ class "game" ]
-        [ gameTableHtml address model
-        , sidebarHtml address model
-        ]
+    [ gameTableHtml address model
+    , sidebarHtml address model
+    , text (toString model)
     ]
 
 

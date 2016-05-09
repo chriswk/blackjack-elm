@@ -36,7 +36,7 @@ init =
       { initialModel | deck = deck }
 
     model =
-      shuffleCards m
+      initialDeal (shuffleCards m)
   in
     ( model, Effects.none )
 
