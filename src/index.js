@@ -1,4 +1,3 @@
-require( './styles/_reset.scss' );
 require( './styles/cards.scss' );
 require( './styles/style.scss' );
 

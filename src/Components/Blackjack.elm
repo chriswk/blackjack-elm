@@ -2,6 +2,7 @@ module Components.Blackjack (..) where
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
+import Html.Events exposing (onClick)
 import Random exposing (Seed, generate)
 import Signal exposing (Signal, Address)
 import Effects exposing (Effects)
@@ -12,6 +13,7 @@ import String exposing (toLower)
 
 type Action
   = NoOp
+  | NewGame
 
 
 type Suit
@@ -49,9 +51,36 @@ type alias Deck =
   List Card
 
 
+type PlayerStatus
+  = Playing
+  | Standing
+  | Bust
+  | Blackjack
+
+
+type alias Dealer =
+  { hand : List Card
+  , score : Int
+  , status : PlayerStatus
+  , hitLimit : Int
+  }
+
+
+type alias Player =
+  { hand : List Card
+  , score : Int
+  , status : PlayerStatus
+  }
+
+
 type alias Model =
   { deck : Deck
   , seed : Seed
+  , player : Player
+  , dealer : Dealer
+  , playerWins : Float
+  , dealerWins : Float
+  , gamesPlayed : Float
   }
 
 
@@ -226,9 +255,147 @@ cardToHtml { suit, rank } =
       ]
 
 
+gameStatus : Model -> Html
+gameStatus model =
+  let
+    playerWins =
+      "Player wins: " ++ (toString model.playerWins)
+
+    gamesPlayed =
+      "Games played: " ++ (toString model.gamesPlayed)
+
+    dealerWins =
+      "Dealer wins: " ++ (toString model.dealerWins)
+
+    winPercentage =
+      if model.gamesPlayed > 0 then
+        "Win percentage: " ++ (toString (model.playerWins / model.gamesPlayed))
+      else
+        "No games played yet"
+  in
+    div
+      [ class "gameStatus" ]
+      [ div [ class "player" ] [ text playerWins ]
+      , div [ class "dealer" ] [ text dealerWins ]
+      , text gamesPlayed
+      , text winPercentage
+      ]
+
+
+dealerHtml : Model -> Html
+dealerHtml model =
+  let
+    cards =
+      List.map cardToHtml model.dealer.hand
+  in
+    div
+      [ class "dealer" ]
+      cards
+
+
+playerHtml : Model -> Html
+playerHtml model =
+  let
+    cards =
+      List.map cardToHtml model.player.hand
+  in
+    div
+      [ class "player" ]
+      cards
+
+
+gameTableHtml : Address Action -> Model -> Html
+gameTableHtml address model =
+  div
+    [ class "game col-md8" ]
+    [ dealerHtml model
+    , playerHtml model
+    ]
+
+
+sidebarHtml : Address Action -> Model -> Html
+sidebarHtml address model =
+  div
+    [ class "col" ]
+    [ button
+        [ onClick address NewGame ]
+        [ text "New Game" ]
+    , gameStatus model
+    ]
+
+
+buttonHtml : Address Action -> Html
+buttonHtml address =
+  div
+    []
+    [ button
+        [ onClick address NewGame ]
+        [ text "New game" ]
+    ]
+
+
 view : Address Action -> Model -> Html
 view address model =
-  div [ class "game" ] (List.map cardToHtml (List.take 2 model.deck))
+  div
+    [ class "container-fluid" ]
+    [ div
+        [ class "game" ]
+        [ gameTableHtml address model
+        , sidebarHtml address model
+        ]
+    ]
+
+
+newGame : Model -> Model
+newGame model =
+  let
+    reshuffled =
+      shuffleCards model
+  in
+    { reshuffled | gamesPlayed = model.gamesPlayed + 1 }
+
+
+cardScorer : Card -> Int -> Int
+cardScorer card soFar =
+  if card.rank == Ace then
+    if (soFar + (valueOfCard card)) > 21 then
+      soFar + 1
+    else
+      soFar + (valueOfCard card)
+  else
+    soFar + (valueOfCard card)
+
+
+scoreHand : List Card -> Int
+scoreHand hand =
+  List.foldl cardScorer 0 hand
+
+
+initialDeal : Model -> Model
+initialDeal model =
+  let
+    playerCards =
+      List.take 2 model.deck
+
+    dealerCards =
+      List.take 2 (List.drop 2 model.deck)
+
+    playedDeck =
+      List.drop 4 model.deck
+
+    player =
+      model.player
+
+    dealer =
+      model.dealer
+
+    upPlayer =
+      { player | hand = playerCards, score = scoreHand playerCards }
+
+    upDealer =
+      { dealer | hand = dealerCards, score = scoreHand dealerCards }
+  in
+    { model | deck = playedDeck, player = upPlayer, dealer = upDealer }
 
 
 update : Action -> Model -> ( Model, Effects Action )
@@ -236,3 +403,6 @@ update action model =
   case action of
     NoOp ->
       ( model, Effects.none )
+
+    NewGame ->
+      ( newGame model, Effects.none )
