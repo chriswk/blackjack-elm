@@ -181,7 +181,7 @@ gameButtons address model =
       if model.player.status == Playing && model.gameStatus == InProgress then
         button [ class "unit", onClick address Hit ] [ text "Hit me!" ]
       else
-        button [ class "unit", disabled True ] [ text "Hit me!" ]
+        button [ class "unit", onClick address NewGame ] [ text "Start a new game" ]
 
     standButton =
       if model.player.status == Playing && model.gameStatus == InProgress then
