@@ -7,7 +7,8 @@
     "start": "webpack-dev-server --hot --inline --content-base src/",
     "build": "rimraf dist && webpack && cp src/favicon.ico dist/favicon.ico",
     "test": "elm-test tests/TestRunner.elm",
-    "watch": "webpack --watch"
+    "watch": "webpack --watch",
+    "publish": "npm run build && node publish.js"
   },
   "repository": "https://github.com/chriswk/blackjack-elm",
   "author": "Christopher Kolstad <christopher.kolstad@gmail.com>",
@@ -30,5 +31,8 @@
     "webpack": "1.12.13",
     "webpack-dev-server": "1.14.1",
     "webpack-merge": "0.7.3"
+  },
+  "devDependencies": {
+    "gh-pages": "^0.11.0"
   }
 }

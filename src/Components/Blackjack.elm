@@ -213,7 +213,11 @@ cardScorer card soFar =
 
 scoreHand : List Card -> Int
 scoreHand hand =
-  List.foldl cardScorer 0 hand
+  let
+    sortedHand =
+      List.sortBy valueOfCard hand
+  in
+    List.foldl cardScorer 0 sortedHand
 
 
 isBlackjack : List Card -> PlayerStatus
