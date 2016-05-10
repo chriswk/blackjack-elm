@@ -19,6 +19,13 @@ type Action
   | Stand
 
 
+type GameStatus
+  = InProgress
+  | Draw
+  | PlayerWin
+  | DealerWin
+
+
 type PlayerStatus
   = Playing
   | Standing
@@ -48,7 +55,9 @@ type alias Model =
   , dealer : Dealer
   , playerWins : Float
   , dealerWins : Float
+  , draws : Float
   , gamesPlayed : Float
+  , gameStatus : GameStatus
   }
 
 
@@ -100,6 +109,9 @@ gameStatus model =
     dealerWins =
       "Dealer wins: " ++ (toString model.dealerWins)
 
+    draws =
+      "Draws: " ++ (toString model.draws)
+
     winPercentage =
       if model.gamesPlayed > 0 then
         "Win percentage: " ++ (toString (model.playerWins / model.gamesPlayed)) ++ "%"
@@ -110,6 +122,7 @@ gameStatus model =
       [ class "line gameStatus" ]
       [ div [ class "line player" ] [ div [ class "unit" ] [ text playerWins ] ]
       , div [ class "line dealer" ] [ div [ class "unit" ] [ text dealerWins ] ]
+      , div [ class "line draws" ] [ div [ class "unit" ] [ text draws ] ]
       , div [ class "line played" ] [ div [ class "unit" ] [ text gamesPlayed ] ]
       , div [ class "line winPercentage" ] [ div [ class "unit" ] [ text winPercentage ] ]
       ]
@@ -163,33 +176,81 @@ sidebarHtml address model =
 
 gameButtons : Address Action -> Model -> Html
 gameButtons address model =
-  div
-    [ class "line" ]
-    [ button
-        [ class "unit", onClick address Hit ]
-        [ text "Hit me!" ]
-    , button
-        [ class "unit", onClick address Stand ]
-        [ text "Stand" ]
-    ]
+  let
+    hitButton =
+      if model.player.status == Playing && model.gameStatus == InProgress then
+        button [ class "unit", onClick address Hit ] [ text "Hit me!" ]
+      else
+        button [ class "unit", disabled True ] [ text "Hit me!" ]
+
+    standButton =
+      if model.player.status == Playing && model.gameStatus == InProgress then
+        button
+          [ class "unit", onClick address Stand ]
+          [ text "Stand" ]
+      else
+        button
+          [ class "unit", disabled True ]
+          [ text "Stand" ]
+  in
+    div
+      [ class "line" ]
+      [ hitButton
+      , standButton
+      ]
 
 
 view : Address Action -> Model -> Html
 view address model =
-  div
-    [ class "line" ]
-    [ gameTableHtml address model
-    , sidebarHtml address model
-    , text (toString model.player)
-    , text (toString model.dealer)
-    ]
+  let
+    dealerStatus =
+      "Dealer status: " ++ (toString model.dealer)
+
+    playerStatus =
+      "Player status: " ++ (toString model.player)
+
+    gameState =
+      "Current game state: " ++ (toString model.gameStatus)
+  in
+    div
+      [ class "line" ]
+      [ gameTableHtml address model
+      , sidebarHtml address model
+      , div [ class "unit" ] [ text playerStatus ]
+      , div [ class "unit" ] [ text dealerStatus ]
+      , div [ class "unit" ] [ text gameState ]
+      ]
 
 
 newGame : Model -> Model
 newGame model =
   let
+    dealerWins =
+      if model.gameStatus == DealerWin then
+        model.dealerWins + 1
+      else
+        model.dealerWins
+
+    playerWins =
+      if model.gameStatus == PlayerWin then
+        model.playerWins + 1
+      else
+        model.playerWins
+
+    draws =
+      if model.gameStatus == Draw then
+        model.draws + 1
+      else
+        model.draws
+
+    gamesPlayed =
+      if model.gameStatus == InProgress then
+        model.gamesPlayed
+      else
+        model.gamesPlayed + 1
+
     newGameModel =
-      { model | deck = newDeck }
+      { model | deck = newDeck, dealerWins = dealerWins, playerWins = playerWins, draws = draws }
 
     reshuffled =
       shuffleCards newGameModel
@@ -197,7 +258,7 @@ newGame model =
     newGameMod =
       initialDeal reshuffled
   in
-    { newGameMod | gamesPlayed = model.gamesPlayed + 1 }
+    { newGameMod | gamesPlayed = model.gamesPlayed + 1, gameStatus = InProgress }
 
 
 cardScorer : Card -> Int -> Int
@@ -220,15 +281,12 @@ scoreHand hand =
     List.foldl cardScorer 0 sortedHand
 
 
-isBlackjack : List Card -> PlayerStatus
+isBlackjack : List Card -> Bool
 isBlackjack hand =
-  if List.length hand == 2 then
-    if scoreHand hand == 21 then
-      Blackjack
-    else
-      Playing
+  if (List.length hand == 2) && (scoreHand hand == 21) then
+    True
   else
-    Playing
+    False
 
 
 hit : Model -> Model
@@ -263,7 +321,103 @@ hit model =
     deck =
       List.drop 1 model.deck
   in
-    { model | deck = deck, player = updatedPlayer }
+    { model
+      | deck = deck
+      , player = updatedPlayer
+      , gameStatus =
+          if updatedPlayer.status == Bust then
+            DealerWin
+          else
+            InProgress
+    }
+
+
+drawWhile : List Card -> List Card -> Int -> ( List Card, List Card )
+drawWhile hand deck limit =
+  let
+    maybeNextCard =
+      List.head deck
+
+    maybeRestOfDeck =
+      List.tail deck
+
+    newHand =
+      case maybeNextCard of
+        Just card ->
+          card :: hand
+
+        Nothing ->
+          hand
+
+    restOfDeck =
+      case maybeRestOfDeck of
+        Just deck ->
+          deck
+
+        Nothing ->
+          []
+  in
+    if scoreHand hand >= limit then
+      ( hand, deck )
+    else
+      drawWhile newHand restOfDeck limit
+
+
+playDealer : Model -> Model
+playDealer model =
+  let
+    dealer =
+      model.dealer
+
+    draws =
+      drawWhile dealer.hand model.deck dealer.hitLimit
+
+    dealerHand =
+      (fst draws)
+
+    remainderOfDeck =
+      (snd draws)
+
+    score =
+      scoreHand dealerHand
+
+    status =
+      if score > 21 then
+        Bust
+      else
+        Standing
+
+    updatedDealer =
+      { dealer | hand = dealerHand, status = status, score = score }
+  in
+    { model | dealer = updatedDealer, deck = remainderOfDeck }
+
+
+decideWinner : Model -> Model
+decideWinner model =
+  let
+    player =
+      model.player
+
+    dealer =
+      model.dealer
+
+    gameStatus =
+      if player.status == Bust then
+        DealerWin
+      else if dealer.status == Bust then
+        PlayerWin
+      else if player.status == Standing && dealer.status == Standing then
+        if player.score > dealer.score then
+          PlayerWin
+        else if dealer.score > player.score then
+          DealerWin
+        else
+          Draw
+      else
+        model.gameStatus
+  in
+    { model | gameStatus = gameStatus }
 
 
 stand : Model -> Model
@@ -274,8 +428,17 @@ stand model =
 
     updatedPlayer =
       { player | status = Standing }
+
+    updateModelWithPlayer =
+      { model | player = updatedPlayer }
+
+    modelWithPlayedDealer =
+      playDealer updateModelWithPlayer
+
+    modelWithGameDecision =
+      decideWinner modelWithPlayedDealer
   in
-    { model | player = updatedPlayer }
+    modelWithGameDecision
 
 
 initialDeal : Model -> Model
@@ -296,13 +459,46 @@ initialDeal model =
     dealer =
       model.dealer
 
+    playerBlackjack =
+      isBlackjack playerCards
+
+    dealerBlackjack =
+      isBlackjack dealerCards
+
+    gameStatus =
+      if playerBlackjack then
+        if dealerBlackjack then
+          Draw
+        else
+          PlayerWin
+      else if dealerBlackjack then
+        DealerWin
+      else
+        InProgress
+
     upPlayer =
-      { player | hand = playerCards, score = scoreHand playerCards, status = isBlackjack playerCards }
+      { player
+        | hand = playerCards
+        , score = scoreHand playerCards
+        , status =
+            if playerBlackjack then
+              Blackjack
+            else
+              Playing
+      }
 
     upDealer =
-      { dealer | hand = dealerCards, score = scoreHand dealerCards, status = isBlackjack dealerCards }
+      { dealer
+        | hand = dealerCards
+        , score = scoreHand dealerCards
+        , status =
+            if dealerBlackjack then
+              Blackjack
+            else
+              Playing
+      }
   in
-    { model | deck = playedDeck, player = upPlayer, dealer = upDealer }
+    { model | deck = playedDeck, player = upPlayer, dealer = upDealer, gameStatus = gameStatus }
 
 
 update : Action -> Model -> ( Model, Effects Action )

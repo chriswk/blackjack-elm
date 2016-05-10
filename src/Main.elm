@@ -16,9 +16,11 @@ initialModel =
   , seed = startTimeSeed
   , playerWins = 0
   , dealerWins = 0
+  , draws = 0
   , gamesPlayed = 0
   , player = Player [] 0 Playing
   , dealer = Dealer [] 0 Playing 17
+  , gameStatus = InProgress
   }
 
 
