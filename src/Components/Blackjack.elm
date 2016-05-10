@@ -254,7 +254,7 @@ hit model =
         Playing
 
     updatedPlayer =
-      { player | hand = newHand, status = status }
+      { player | hand = newHand, status = status, score = scoreHand newHand }
 
     deck =
       List.drop 1 model.deck
