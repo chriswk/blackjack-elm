@@ -71,6 +71,8 @@ if ( TARGET_ENV === 'development' ) {
             'sass-loader'
           ]
         },
+        { test: /\.png$/, loader: "url-loader?limit=100000" },
+        { test: /\.jpg$/, loader: "file-loader" }
       ]
     }
 

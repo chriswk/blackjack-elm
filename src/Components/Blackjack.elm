@@ -1,5 +1,6 @@
 module Components.Blackjack (..) where
 
+import Components.Deck exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
@@ -14,41 +15,8 @@ import String exposing (toLower)
 type Action
   = NoOp
   | NewGame
-
-
-type Suit
-  = Diamonds
-  | Hearts
-  | Spades
-  | Clubs
-  | None
-
-
-type Rank
-  = Two
-  | Three
-  | Four
-  | Five
-  | Six
-  | Seven
-  | Eight
-  | Nine
-  | Ten
-  | Jack
-  | Queen
-  | King
-  | Ace
-  | Joker
-
-
-type alias Card =
-  { suit : Suit
-  , rank : Rank
-  }
-
-
-type alias Deck =
-  List Card
+  | Hit
+  | Stand
 
 
 type PlayerStatus
@@ -82,141 +50,6 @@ type alias Model =
   , dealerWins : Float
   , gamesPlayed : Float
   }
-
-
-suitFromString : String -> Suit
-suitFromString suit =
-  case suit of
-    "Clubs" ->
-      Clubs
-
-    "Diamonds" ->
-      Diamonds
-
-    "Spades" ->
-      Spades
-
-    "Hearts" ->
-      Hearts
-
-    _ ->
-      None
-
-
-rankFromNumber : Int -> Rank
-rankFromNumber rank =
-  case rank of
-    1 ->
-      Ace
-
-    2 ->
-      Two
-
-    3 ->
-      Three
-
-    4 ->
-      Four
-
-    5 ->
-      Five
-
-    6 ->
-      Six
-
-    7 ->
-      Seven
-
-    8 ->
-      Eight
-
-    9 ->
-      Nine
-
-    10 ->
-      Ten
-
-    11 ->
-      Jack
-
-    12 ->
-      Queen
-
-    13 ->
-      King
-
-    _ ->
-      Joker
-
-
-rankForSuit : Suit -> List Card
-rankForSuit suit =
-  let
-    ranks =
-      List.map rankFromNumber [1..13]
-
-    partialDeck =
-      List.map (\r -> Card suit r) ranks
-  in
-    partialDeck
-
-
-newDeck : Deck
-newDeck =
-  let
-    suits =
-      List.map suitFromString [ "Clubs", "Diamonds", "Hearts", "Spades" ]
-
-    deck =
-      List.concatMap rankForSuit suits
-  in
-    deck
-
-
-valueOfCard : Card -> Int
-valueOfCard { suit, rank } =
-  case rank of
-    Two ->
-      2
-
-    Three ->
-      3
-
-    Four ->
-      4
-
-    Five ->
-      5
-
-    Six ->
-      6
-
-    Seven ->
-      7
-
-    Eight ->
-      8
-
-    Nine ->
-      9
-
-    Ten ->
-      10
-
-    Jack ->
-      10
-
-    Queen ->
-      10
-
-    King ->
-      10
-
-    Ace ->
-      11
-
-    Joker ->
-      0
 
 
 shuffleCards : Model -> Model
@@ -293,15 +126,19 @@ dealerHtml model =
       cards
 
 
-playerHtml : Model -> Html
-playerHtml model =
+playerHtml : Address Action -> Model -> Html
+playerHtml address model =
   let
     cards =
       List.map cardToHtml model.player.hand
   in
     div
       [ class "line player" ]
-      cards
+      [ div
+          [ class "cards" ]
+          cards
+      , gameButtons address model
+      ]
 
 
 gameTableHtml : Address Action -> Model -> Html
@@ -309,7 +146,7 @@ gameTableHtml address model =
   div
     [ id "game", class "unit r-size2of3" ]
     [ dealerHtml model
-    , playerHtml model
+    , playerHtml address model
     ]
 
 
@@ -324,13 +161,16 @@ sidebarHtml address model =
     ]
 
 
-buttonHtml : Address Action -> Html
-buttonHtml address =
+gameButtons : Address Action -> Model -> Html
+gameButtons address model =
   div
-    []
+    [ class "line" ]
     [ button
-        [ onClick address NewGame ]
-        [ text "New game" ]
+        [ class "unit", onClick address Hit ]
+        [ text "Hit me!" ]
+    , button
+        [ class "unit", onClick address Stand ]
+        [ text "Stand" ]
     ]
 
 
@@ -387,6 +227,53 @@ isBlackjack hand =
     Playing
 
 
+hit : Model -> Model
+hit model =
+  let
+    player =
+      model.player
+
+    maybeNextCard =
+      List.head model.deck
+
+    maybeDeck =
+      List.tail model.deck
+
+    newHand =
+      case maybeNextCard of
+        Just card ->
+          card :: player.hand
+
+        Nothing ->
+          player.hand
+
+    status =
+      if (scoreHand newHand) > 21 then
+        Bust
+      else
+        Playing
+
+    updatedPlayer =
+      { player | hand = newHand, status = status }
+
+    deck =
+      List.drop 1 model.deck
+  in
+    { model | deck = deck, player = updatedPlayer }
+
+
+stand : Model -> Model
+stand model =
+  let
+    player =
+      model.player
+
+    updatedPlayer =
+      { player | status = Standing }
+  in
+    { model | player = updatedPlayer }
+
+
 initialDeal : Model -> Model
 initialDeal model =
   let
@@ -422,3 +309,9 @@ update action model =
 
     NewGame ->
       ( newGame model, Effects.none )
+
+    Hit ->
+      ( hit model, Effects.none )
+
+    Stand ->
+      ( stand model, Effects.none )

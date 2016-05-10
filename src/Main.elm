@@ -1,6 +1,7 @@
 module Main (..) where
 
 import Components.Blackjack exposing (..)
+import Components.Deck exposing (newDeck)
 import Random exposing (Seed)
 import Html exposing (..)
 import Effects exposing (Effects, Never)
