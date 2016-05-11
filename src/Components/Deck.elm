@@ -1,6 +1,7 @@
-module Components.Deck (..) where
+module Components.Deck exposing (..)
 
-
+import Array exposing (Array)
+import Random exposing (Generator, Seed)
 type Suit
   = Diamonds
   | Hearts
@@ -166,3 +167,38 @@ valueOfCard { suit, rank } =
 
     Joker ->
       0
+
+{-| Create a generator that always returns the same value.
+-}
+constant : a -> Generator a
+constant value =
+  Random.map (\_ -> value) Random.bool
+
+
+
+{-| Sample without replacement: produce a randomly selected element of the
+array, and the array with that element omitted (shifting all later elements
+down). -}
+choose : Array a -> Generator (Maybe a, Array a)
+choose arr = if Array.isEmpty arr then constant (Nothing, arr) else
+  let lastIndex = Array.length arr - 1
+      front i = Array.slice 0 i arr
+      back i = if i == lastIndex -- workaround for #1
+               then Array.empty
+               else Array.slice (i+1) (lastIndex+1) arr
+      gen = Random.int 0 lastIndex
+      in Random.map (\index ->
+        (Array.get index arr, Array.append (front index) (back index)))
+        gen
+
+{-| Shuffle the array using the Fisher-Yates algorithm. Takes O(_n_ log _n_)
+time and O(_n_) additional space. -}
+shuffle : Array a -> Generator (Array a)
+shuffle arr = if Array.isEmpty arr then constant arr else
+  let --helper : (List a, Array a) -> Generator (List a, Array a)
+      helper (done, remaining) =
+        choose remaining `Random.andThen` (\(m_val, shorter) ->
+          case m_val of
+            Nothing -> constant (done, shorter)
+            Just val -> helper (val::done, shorter))
+  in Random.map (fst>>Array.fromList) (helper ([], arr))
